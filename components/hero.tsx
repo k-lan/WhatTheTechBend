@@ -11,6 +11,7 @@ export default function Hero() {
     email: ''
   })
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const validateEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -20,9 +21,11 @@ export default function Hero() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setIsSubmitting(true)
 
     if (!validateEmail(formData.email)) {
       setError('Please enter a valid email address')
+      setIsSubmitting(false)
       return
     }
 
@@ -42,8 +45,10 @@ export default function Hero() {
       // Reset form on success
       setFormData({ firstName: '', lastName: '', email: '' })
       alert('Thank you for subscribing!')
-    } catch (err) {
+    } catch {
       setError('Failed to submit. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -65,6 +70,7 @@ export default function Hero() {
               onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
               className="bg-white/10 backdrop-blur-sm text-white placeholder:text-white/70"
               required
+              disabled={isSubmitting}
             />
             <Input
               type="text"
@@ -73,6 +79,7 @@ export default function Hero() {
               onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
               className="bg-white/10 backdrop-blur-sm text-white placeholder:text-white/70"
               required
+              disabled={isSubmitting}
             />
           </div>
           <Input
@@ -82,9 +89,12 @@ export default function Hero() {
             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
             className="w-full bg-white/10 backdrop-blur-sm text-white placeholder:text-white/70"
             required
+            disabled={isSubmitting}
           />
           {error && <p className="text-red-400 text-sm">{error}</p>}
-          <Button type="submit" className="w-full">Subscribe</Button>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+          </Button>
         </form>
       </div>
     </section>
